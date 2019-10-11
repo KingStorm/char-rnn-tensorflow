@@ -9,6 +9,8 @@ from six.moves import cPickle
 
 from six import text_type
 
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
+print("visible cuda devices: %s" % os.environ["CUDA_VISIBLE_DEVICES"])
 
 parser = argparse.ArgumentParser(
                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -42,7 +44,7 @@ def sample(args):
         ckpt = tf.train.get_checkpoint_state(args.save_dir)
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess, ckpt.model_checkpoint_path)
-            data = model.sample(sess, chars, vocab, args.n, args.prime,
+            data = model.sample_subword(sess, chars, vocab, args.n, args.prime,
                                args.sample).encode('utf-8')
             print(data.decode("utf-8"))
 

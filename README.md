@@ -1,3 +1,8 @@
+NOTE:
+THIS REPO IS KIND OF FORKED FROM 
+https://github.com/sherjilozair/char-rnn-tensorflow
+
+
 char-rnn-tensorflow
 ===
 

@@ -135,3 +135,44 @@ class Model():
             ret += pred
             char = pred
         return ret
+
+    def sample_subword(self, sess, chars, vocab, num=200, prime='The ', sampling_type=1):
+        """
+        Vocab includes subword like GO_ _ING
+        """
+        state = sess.run(self.cell.zero_state(1, tf.float32))
+        x = np.zeros((1, 1))
+        x[0, 0] = vocab[prime]
+        feed = {self.input_data: x, self.initial_state: state}
+        [state] = sess.run([self.final_state], feed)
+
+        def weighted_pick(weights):
+            t = np.cumsum(weights)
+            s = np.sum(weights)
+            return(int(np.searchsorted(t, np.random.rand(1)*s)))
+
+        ret = prime
+        char = prime
+        for _ in range(num):
+            x = np.zeros((1, 1))
+            x[0, 0] = vocab[char]
+            feed = {self.input_data: x, self.initial_state: state}
+            [probs, state] = sess.run([self.probs, self.final_state], feed)
+            p = probs[0]
+
+            if sampling_type == 0:
+                sample = np.argmax(p)
+            elif sampling_type == 2:
+                if char == ' ':
+                    sample = weighted_pick(p)
+                else:
+                    sample = np.argmax(p)
+            else:  # sampling_type == 1 default:
+                sample = weighted_pick(p)
+
+            pred = chars[sample]
+            ret += " "
+            ret += pred
+            char = pred
+        return ret
+
